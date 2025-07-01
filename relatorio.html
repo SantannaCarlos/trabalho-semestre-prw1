@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Carros</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <h1>Relatório de Carros</h1>
+
+    <button onclick="listarTodos()">Listar Todos</button>
+    <div id="listaTodos"></div>
+
+    <hr>
+    <label>Buscar por Renavam:</label>
+    <input type="text" id="buscaRenavam">
+    <button onclick="buscarCarro()">Buscar</button>
+    <div id="resultadoBusca"></div>
+
+    <hr>
+    <h3>Filtrar por Cor, Marca ou Modelo</h3>
+    <label>Cor:</label><input type="text" id="filtroCor"><br>
+    <label>Marca:</label><input type="text" id="filtroMarca"><br>
+    <label>Modelo:</label><input type="text" id="filtroModelo"><br>
+    <button onclick="filtrarCarros()">Filtrar</button>
+    <div id="resultadoFiltro"></div>
+
+    <hr>
+    <button onclick="mediaPreco()">Mostrar Média de Preço</button>
+    <div id="mediaPreco"></div>
+
+    <br><br>
+    <a href="cadastro.html"><button>Voltar para Cadastro</button></a>
+</div>
+
+<script>
+    const vetorCarros = JSON.parse(localStorage.getItem("vetorCarros")) || [];
+
+    function listarTodos() {
+        let html = "<ul>";
+        vetorCarros.forEach(carro => {
+            html += `<li>${carro.marca} ${carro.modelo} - ${carro.cor} - Placa: ${carro.placa} - Preço: R$ ${carro.preco.toFixed(2)}</li>`;
+        });
+        html += "</ul>";
+        $('#listaTodos').html(html);
+    }
+
+    function buscarCarro() {
+        const renavam = $('#buscaRenavam').val();
+        const carro = vetorCarros.find(c => c.renavam === renavam);
+        if (carro) {
+            $('#resultadoBusca').html(
+                `Encontrado: ${carro.marca} ${carro.modelo}, Cor: ${carro.cor}, Placa: ${carro.placa}, Preço: R$ ${carro.preco.toFixed(2)}`
+            );
+        } else {
+            $('#resultadoBusca').html("Carro não encontrado.");
+        }
+    }
+
+    function mediaPreco() {
+        if (vetorCarros.length === 0) {
+            $('#mediaPreco').html("Nenhum carro cadastrado.");
+            return;
+        }
+        const media = vetorCarros.reduce((soma, c) => soma + c.preco, 0) / vetorCarros.length;
+        $('#mediaPreco').html(`Média de Preço: R$ ${media.toFixed(2)}`);
+    }
+
+    function filtrarCarros() {
+        const cor = $('#filtroCor').val().toLowerCase();
+        const marca = $('#filtroMarca').val().toLowerCase();
+        const modelo = $('#filtroModelo').val().toLowerCase();
+
+        const filtrados = vetorCarros.filter(c => {
+            return (cor === "" || c.cor.toLowerCase().includes(cor)) &&
+                   (marca === "" || c.marca.toLowerCase().includes(marca)) &&
+                   (modelo === "" || c.modelo.toLowerCase().includes(modelo));
+        });
+
+        if (filtrados.length === 0) {
+            $('#resultadoFiltro').html("Nenhum carro encontrado com esses filtros.");
+            return;
+        }
+
+        let html = "<ul>";
+        filtrados.forEach(carro => {
+            html += `<li>${carro.marca} ${carro.modelo} - ${carro.cor} - Placa: ${carro.placa} - Preço: R$ ${carro.preco.toFixed(2)}</li>`;
+        });
+        html += "</ul>";
+        $('#resultadoFiltro').html(html);
+    }
+</script>
+</body>
+</html>

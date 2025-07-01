@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Carros</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <h1>Cadastro de Carros</h1>
+
+    <form id="formCarro">
+        <label>Renavam:</label>
+        <input type="text" id="renavam"><br>
+        <label>Marca:</label>
+        <input type="text" id="marca"><br>
+        <label>Modelo:</label>
+        <input type="text" id="modelo"><br>
+        <label>Placa:</label>
+        <input type="text" id="placa"><br>
+        <label>Cor:</label>
+        <input type="text" id="cor"><br>
+        <label>Preço (R$):</label>
+        <input type="number" id="preco"><br>
+
+        <button type="button" id="btnCadastrar">Cadastrar</button>
+        <button type="button" id="btnAlterar">Alterar</button>
+        <button type="button" id="btnExcluir">Excluir</button>
+    </form>
+
+    <div id="mensagem"></div>
+
+    <br>
+    <a href="relatorio.html"><button>Ir para Relatório</button></a>
+</div>
+
+<script>
+    let vetorCarros = JSON.parse(localStorage.getItem("vetorCarros")) || [];
+
+    function salvarLocalStorage() {
+        localStorage.setItem("vetorCarros", JSON.stringify(vetorCarros));
+    }
+
+    function limparCampos() {
+        $('#formCarro')[0].reset();
+    }
+
+    function mostrarMensagem(texto, cor = 'green') {
+        $('#mensagem').html(`<p style="color:${cor}">${texto}</p>`);
+        setTimeout(() => $('#mensagem').html(""), 3000);
+    }
+
+    $('#btnCadastrar').click(function () {
+        let renavam = $('#renavam').val();
+        let marca = $('#marca').val();
+        let modelo = $('#modelo').val();
+        let placa = $('#placa').val();
+        let cor = $('#cor').val();
+        let preco = parseFloat($('#preco').val());
+
+        if (!placa.trim()) {
+            mostrarMensagem("Placa não pode estar vazia.", 'red');
+            return;
+        }
+
+        if (isNaN(preco) || preco <= 0) {
+            mostrarMensagem("Preço deve ser maior que zero.", 'red');
+            return;
+        }
+
+        if (vetorCarros.find(c => c.renavam === renavam)) {
+            mostrarMensagem("Já existe um carro com esse Renavam.", 'red');
+            return;
+        }
+
+        let carro = { renavam, marca, modelo, placa, cor, preco };
+        vetorCarros.push(carro);
+        salvarLocalStorage();
+        mostrarMensagem("Carro cadastrado com sucesso!");
+        limparCampos();
+    });
+
+    $('#btnExcluir').click(function () {
+        let renavam = $('#renavam').val();
+        if (!confirm("Deseja realmente excluir esse carro?")) return;
+
+        let novoVetor = vetorCarros.filter(c => c.renavam !== renavam);
+        if (novoVetor.length === vetorCarros.length) {
+            mostrarMensagem("Carro não encontrado.", 'red');
+        } else {
+            vetorCarros = novoVetor;
+            salvarLocalStorage();
+            mostrarMensagem("Carro excluído com sucesso.");
+            limparCampos();
+        }
+    });
+
+    $('#btnAlterar').click(function () {
+        let renavam = $('#renavam').val();
+        if (!confirm("Deseja realmente alterar esse carro?")) return;
+
+        let index = vetorCarros.findIndex(c => c.renavam === renavam);
+        if (index === -1) {
+            mostrarMensagem("Carro não encontrado.", 'red');
+            return;
+        }
+
+        let placa = $('#placa').val();
+        let preco = parseFloat($('#preco').val());
+
+        if (!placa.trim()) {
+            mostrarMensagem("Placa não pode estar vazia.", 'red');
+            return;
+        }
+
+        if (isNaN(preco) || preco <= 0) {
+            mostrarMensagem("Preço deve ser maior que zero.", 'red');
+            return;
+        }
+
+        vetorCarros[index] = {
+            renavam,
+            marca: $('#marca').val(),
+            modelo: $('#modelo').val(),
+            placa,
+            cor: $('#cor').val(),
+            preco
+        };
+
+        salvarLocalStorage();
+        mostrarMensagem("Carro alterado com sucesso!");
+        limparCampos();
+    });
+</script>
+</body>
+</html>

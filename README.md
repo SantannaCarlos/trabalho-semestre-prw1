@@ -2,6 +2,7 @@
 
 Este é um projeto simples em HTML, CSS e JavaScript utilizando jQuery, desenvolvido como Trabalho Final da disciplina de Desenvolvimento Web. O sistema permite o cadastro, alteração, exclusão, listagem, busca e filtragem de carros com persistência local via `localStorage`.
 
+### Aqui temos a apresentação em [vídeo do projeto](https://youtu.be/BV9S5ypQaqM)
 ---
 
 ## 📌 Funcionalidades
